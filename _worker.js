@@ -56,7 +56,6 @@ export default {
     }
 
     if (path === "/api/ai" && req.method === "POST") {
-      if (!(await readSession(req, env))) return json({ error: "login_required" }, 401);
       if (!env.AI) return json({ error: "ai_not_bound" }, 500);
       const b = await req.json().catch(() => ({}));
       const messages = (b.messages || []).slice(-12).map((m) => ({ role: m.role === "assistant" ? "assistant" : "user", content: String(m.content || "").slice(0, 12000) }));

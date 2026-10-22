@@ -548,14 +548,7 @@ const TIPS = [
 /* ===== ميدزون: الدخول بجوجل + AI + اللغة (عربي/English) ===== */
 const Auth = {
   lang: localStorage.getItem('mzlang') || 'ar', cid: '', gis: 0,
-  async init() {
-    try {
-      this.cid = (await (await fetch('/api/config')).json()).clientId || '';
-      const m = await (await fetch('/api/me')).json();
-      if (m.user) this.login(m.user); else if (DB.user) { DB.user = null; save(); }
-    } catch (e) {}
-    draw();
-  },
+  async init() { draw(); },
   login(u) {
     const old = DB.user && DB.user.email;
     if (old && old !== u.email) {   // حساب تاني على نفس الجهاز: نحفظ القديم ونفتح بيانات الجديد
@@ -572,8 +565,8 @@ const Auth = {
     } catch (e) { B.err = 'تعذّر تسجيل الدخول. جرّب تاني.'; }
     draw();
   },
-  out() { fetch('/api/logout', { method: 'POST' }).catch(() => {}); try { google.accounts.id.disableAutoSelect(); } catch (e) {} },
-  btn() {
+  out() {},
+  btn() { return;
     const el = document.getElementById('gbtn'); if (!el) return;
     if (!this.cid) { el.innerHTML = '<div class="note">الدخول بجوجل لسه متظبطش (محتاج Client ID).</div>'; applyLang(); return; }
     const go = () => {
@@ -755,7 +748,7 @@ function admin(){return shell('me',back('#me','لوحة الأدمن')+`<div cla
 const B={splash:true,g:false,nm:'',em:'',err:''};setTimeout(()=>{B.splash=false;draw()},1800);
 const GI='<svg width="22" height="22" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.2C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.5-.8-3-.8-4.6s.3-3.1.8-4.6l-7.9-6.2C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.1 1.4-4.9 2.3-8.2 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.2C6.5 42.6 14.6 48 24 48z"/></svg>';
 function boot(){if(B.splash)return `<div class="splash"><img src="${FULL}" alt="ميدزون"></div>`;
-if(!DB.user)return `<div class="gate"><div class="gate-top"><span class="big"><img src="${FULL}" alt="ميدزون"></span><h1>منصتك الطبية للمذاكرة</h1><p>شروحات وكويزات وفلاش كاردز ومساعد ذكي في مكان واحد.</p></div><div class="gate-sheet"><h2>سجّل دخولك</h2><p class="mut" style="margin:0 0 16px">علشان نحفظ تقدمك ونفتحلك محتوى فرقتك.</p><div id="gbtn" style="display:flex;justify-content:center;min-height:44px"></div>${B.err?`<div class="note" style="margin:12px 0 0">${B.err}</div>`:''}</div></div>`;
+if(!DB.user){DB.user={name:'ضيف',email:'guest@local',pic:''};save()}
 if(!DB.yr)return `<div class="auth"><h1 style="font-size:26px;margin-bottom:6px">أنت في أنهي فرقة؟</h1><p class="mut" style="margin:0 0 20px">هنفتحلك محتوى فرقتك.</p><div class="yrg">${YRS.map((n,i)=>`<button data-yy="${i+1}">الفرقة ${n}</button>`).join('')}</div></div>`;
 return null}
 function loginG(){const n=B.nm.trim(),e=B.em.trim();if(!n||!/^\S+@\S+\.\S+$/.test(e)){B.err='اكتب اسمك وإيميل صحيح.';return}B.err='';DB.user={name:n,email:e};save()}
